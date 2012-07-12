@@ -1,4 +1,4 @@
-#/usr/bin/python2.7
+#/usr/bin/python2
 # -*- coding: utf8 -*-
 """
 Author: Gustav Fahlén
@@ -9,7 +9,7 @@ I developed this script because i could not find any battery monitor i found nic
 
 ToDo:
     Fix better icons [x]
-    mouse-over percentage for icon []
+    mouse-over percentage for icon [x]
 
 """
 import os
@@ -30,20 +30,21 @@ class StatusIcon:
 
         window = gtk.Window()
         window.connect("destroy", lambda w: gtk.main_quit())
-        #window.show_all()
-
+        
+        batmon = os.environ['XDG_CONFIG_HOME']
+        print batmon
     def right_click_event(self, icon, button, time):
         menu = gtk.Menu()
 
-        levels = gtk.MenuItem("Levels")
+        #levels = gtk.MenuItem("Levels")
         about = gtk.MenuItem("About")
         quit = gtk.MenuItem("Quit")
 
-        levels.connect("activate", self.show_levels)
+        #levels.connect("activate", self.show_levels)
         about.connect("activate", self.show_about_dialog)
         quit.connect("activate", gtk.main_quit)
 
-        menu.append(levels)
+        #menu.append(levels)
         menu.append(about)
         menu.append(quit)
 
@@ -62,27 +63,26 @@ class StatusIcon:
         about_dialog.run()
         about_dialog.destroy()
 
-    def show_levels(self, widget):
-
-        temp = self.readAcpi()
-
-        state = temp[0]
-        battery = temp[1]
-
-        state_text = gtk.Label(state)
-        battery_text = gtk.Label(battery)
-        levels = gtk.Dialog("Battery levels")
-        levels.add_button("Close", 111)
-        levels.vbox.pack_start(state_text)
-        levels.vbox.pack_start(battery_text)
-        state_text.show()
-        battery_text.show()
-
-        levels.run()
-        levels.destroy()
+#    def show_levels(self, widget):
+#
+#        temp = self.readAcpi()
+#
+#        state = temp[0]
+#        battery = temp[1]
+#
+#        state_text = gtk.Label(state)
+#        battery_text = gtk.Label(battery)
+#        levels = gtk.Dialog("Battery levels")
+#        levels.add_button("Close", 111)
+#        levels.vbox.pack_start(state_text)
+#        levels.vbox.pack_start(battery_text)
+#        state_text.show()
+#        battery_text.show()
+#
+#        levels.run()
+#        levels.destroy()
 
     def readAcpi(self):
-
         values = []
         p = os.popen('acpi -b')
 
@@ -92,7 +92,6 @@ class StatusIcon:
         return self.parseAcpi(values)
 
     def parseAcpi(sefl, list):
-
         battery_info = []
         temp = []
 
@@ -101,27 +100,29 @@ class StatusIcon:
             battery_info.append(temp[2])
             battery_info.append(temp[3])
         return battery_info
+
     def setIcon(self, status):
         state = status[0].strip(',')
         current = re.sub("[^0-9]", "", status[1])
         print status
         print state
         print current
+        self.statusicon.set_tooltip(state + " : " + current + "%")
         if state == "Discharging":
             if int(current) < 100 and int(current) > 90:
-                self.statusicon.set_from_file("/home/gustav/Dev/Python/BatteryMon/icons/battery_full.png")
+                self.statusicon.set_from_file("icons/battery_full.png")
             elif int(current) < 90 and int(current) > 75:
-                self.statusicon.set_from_file("/home/gustav/Dev/Python/BatteryMon/icons/battery_third_fouth.png")
+                self.statusicon.set_from_file("icons/battery_third_fouth.png")
             elif int(current) < 75 and int(current) > 50:
-                self.statusicon.set_from_file("/home/gustav/Dev/Python/BatteryMon/icons/battery_two_thirds.png")
+                self.statusicon.set_from_file("icons/battery_two_thirds.png")
             elif int(current) < 50 and int(current) > 15:
-                self.statusicon.set_from_file("/home/gustav/Dev/Python/BatteryMon/icons/battery_low.png")
+                self.statusicon.set_from_file("icons/battery_low.png")
             elif int(current) < 15 and int(current) > 5:
-                self.statusicon.set_from_file("/home/gustav/Dev/Python/BatteryMon/icons/battery_caution.png")
+                self.statusicon.set_from_file("icons/battery_caution.png")
             elif int(current) < 5 and int(current) > 0:
-                self.statusicon.set_from_file("/home/gustav/Dev/Python/BatteryMon/icons/battery-000.png")
-        elif state == "Charging":
-            self.statusicon.set_from_file("/home/gustav/Dev/Python/BatteryMon/icons/battery_charged.png")
+                self.statusicon.set_from_file("icons/battery-000.png")
+        elif state == "Full":
+            self.statusicon.set_from_file("icons/battery_charged.png")
 
     def update(self):
         print "Updating ACPI information"
@@ -132,3 +133,5 @@ class StatusIcon:
 
 StatusIcon()
 gtk.main()
+
+#vim: ts=4 tw=79 cc=+1
