@@ -20,19 +20,21 @@ pygtk.require('2.0')
 import gtk
 import gobject
 from threading import Timer
+global battmon 
+battmon = os.environ['XDG_CONFIG_HOME'] + "/BatteryMon/icons/"
 
 class StatusIcon:
     def __init__(self):
         self.statusicon = gtk.StatusIcon()
         self.update()
         self.statusicon.connect("popup-menu", self.right_click_event)
+
         gobject.timeout_add(3000, self.update)
 
         window = gtk.Window()
         window.connect("destroy", lambda w: gtk.main_quit())
+
         
-        batmon = os.environ['XDG_CONFIG_HOME']
-        print batmon
     def right_click_event(self, icon, button, time):
         menu = gtk.Menu()
 
@@ -63,25 +65,6 @@ class StatusIcon:
         about_dialog.run()
         about_dialog.destroy()
 
-#    def show_levels(self, widget):
-#
-#        temp = self.readAcpi()
-#
-#        state = temp[0]
-#        battery = temp[1]
-#
-#        state_text = gtk.Label(state)
-#        battery_text = gtk.Label(battery)
-#        levels = gtk.Dialog("Battery levels")
-#        levels.add_button("Close", 111)
-#        levels.vbox.pack_start(state_text)
-#        levels.vbox.pack_start(battery_text)
-#        state_text.show()
-#        battery_text.show()
-#
-#        levels.run()
-#        levels.destroy()
-
     def readAcpi(self):
         values = []
         p = os.popen('acpi -b')
@@ -91,7 +74,7 @@ class StatusIcon:
 
         return self.parseAcpi(values)
 
-    def parseAcpi(sefl, list):
+    def parseAcpi(self, list):
         battery_info = []
         temp = []
 
@@ -104,28 +87,30 @@ class StatusIcon:
     def setIcon(self, status):
         state = status[0].strip(',')
         current = re.sub("[^0-9]", "", status[1])
+        """ Debug purpose
         print status
-        print state
+        print state 
         print current
+        """
         self.statusicon.set_tooltip(state + " : " + current + "%")
         if state == "Discharging":
             if int(current) < 100 and int(current) > 90:
-                self.statusicon.set_from_file("icons/battery_full.png")
+                self.statusicon.set_from_file(battmon + "battery_full.png")
             elif int(current) < 90 and int(current) > 75:
-                self.statusicon.set_from_file("icons/battery_third_fouth.png")
+                self.statusicon.set_from_file(battmon + "battery_third_fouth.png")
             elif int(current) < 75 and int(current) > 50:
-                self.statusicon.set_from_file("icons/battery_two_thirds.png")
+                self.statusicon.set_from_file(battmon + "battery_two_thirds.png")
             elif int(current) < 50 and int(current) > 15:
-                self.statusicon.set_from_file("icons/battery_low.png")
+                self.statusicon.set_from_file(battmon + "battery_low.png")
             elif int(current) < 15 and int(current) > 5:
-                self.statusicon.set_from_file("icons/battery_caution.png")
+                self.statusicon.set_from_file(battmon + "battery_caution.png")
             elif int(current) < 5 and int(current) > 0:
-                self.statusicon.set_from_file("icons/battery-000.png")
+                self.statusicon.set_from_file(battmon + "battery-000.png")
         elif state == "Full":
-            self.statusicon.set_from_file("icons/battery_charged.png")
+            self.statusicon.set_from_file(battmon + "battery_charged.png")
 
     def update(self):
-        print "Updating ACPI information"
+        #print "Updating ACPI information" debug purpose
         info = self.readAcpi()
         #time.sleep(5)
         self.setIcon(info)
