@@ -1,4 +1,4 @@
-#/usr/bin/python2
+#!/usr/bin/env python
 # -*- coding: utf8 -*-
 """
 Author: Gustav Fahlén
@@ -20,7 +20,7 @@ pygtk.require('2.0')
 import gtk
 import gobject
 from threading import Timer
-global battmon 
+global battmon
 battmon = os.environ['XDG_CONFIG_HOME'] + "/BatteryMon/icons/"
 
 class StatusIcon:
@@ -34,7 +34,7 @@ class StatusIcon:
         window = gtk.Window()
         window.connect("destroy", lambda w: gtk.main_quit())
 
-        
+
     def right_click_event(self, icon, button, time):
         menu = gtk.Menu()
 
@@ -89,7 +89,7 @@ class StatusIcon:
         current = re.sub("[^0-9]", "", status[1])
         """ Debug purpose
         print status
-        print state 
+        print state
         print current
         """
         self.statusicon.set_tooltip(state + " : " + current + "%")
@@ -107,6 +107,8 @@ class StatusIcon:
             elif int(current) < 5 and int(current) > 0:
                 self.statusicon.set_from_file(battmon + "battery-000.png")
         elif state == "Full":
+            self.statusicon.set_from_file(battmon + "battery_full.png")
+        elif state == "Charging":
             self.statusicon.set_from_file(battmon + "battery_charged.png")
 
     def update(self):
