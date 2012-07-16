@@ -61,6 +61,8 @@ class StatusIcon:
         about_dialog.set_name("Battery status widget")
         about_dialog.set_version("1.0")
         about_dialog.set_authors(["Gustav Fahlen"])
+        about_dialog.set_artists(["Matthieus James - Faenza icons", "http://tiheum.deviantart.com"])
+        about_dialog.set_website("https://github.com/Fennec89/BatteryMon")
 
         about_dialog.run()
         about_dialog.destroy()
