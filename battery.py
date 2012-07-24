@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf8 -*-
 """
 Author: Gustav Fahlén
@@ -94,7 +94,6 @@ class StatusIcon:
         print state
         print current
         """
-        print state
         self.statusicon.set_tooltip(state + " : " + current + "%")
         if state == "Discharging":
             if int(current) < 100 and int(current) > 90:
@@ -109,9 +108,9 @@ class StatusIcon:
                 self.statusicon.set_from_file(battmon + "battery_caution.png")
             elif int(current) < 5 and int(current) > 0:
                 self.statusicon.set_from_file(battmon + "battery-000.png")
-        if state == "Full":
+        elif state == "Full" or state == "Unknown":
             self.statusicon.set_from_file(battmon + "battery_full.png")
-        if state == "Charging":
+        elif state == "Charging":
             self.statusicon.set_from_file(battmon + "battery_charged.png")
 
     def update(self):
